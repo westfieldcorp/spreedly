@@ -55,9 +55,6 @@ module Spreedly
 
     def verify_on_gateway(gateway_token, payment_method_token, options = {})
       body = verify_body(payment_method_token, options)
-      puts '--------------'
-      puts body
-      puts '---------------'
       api_post(verify_url(gateway_token), body)
     end
 
