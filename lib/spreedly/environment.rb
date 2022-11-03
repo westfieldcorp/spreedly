@@ -337,7 +337,11 @@ module Spreedly
           text = xml_for_hash_for_braintree(value)
           "<#{key}>#{text}</#{key}>"
         else
-          "<#{key} type='boolean'>#{value}</#{key}>"
+          if [true, false].include? value
+            "<#{key} type='boolean'>#{value}</#{key}>"
+          else
+            "<#{key}>#{value}</#{key}>"
+          end  
         end
       end.join
     end
