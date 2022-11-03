@@ -314,7 +314,12 @@ module Spreedly
 
     def add_gateway_specific_fields(doc, options)
       return unless options[:gateway_specific_fields].kind_of?(Hash)
-      doc << "<gateway_specific_fields>#{xml_for_hash(options[:gateway_specific_fields])}</gateway_specific_fields>"
+
+      if options[:gateway_specific_fields].key?(:braintree)
+        doc << "<gateway_specific_fields>#{xml_for_hash_for_braintree(options[:gateway_specific_fields])}</gateway_specific_fields>"
+      else
+        doc << "<gateway_specific_fields>#{xml_for_hash(options[:gateway_specific_fields])}</gateway_specific_fields>"
+      end
     end
 
     def add_shipping_address_override(doc, options)
@@ -324,6 +329,21 @@ module Spreedly
           doc.send(k, v)
         end
       end
+    end
+
+    def xml_for_hash_for_braintree(hash)
+      hash.map do |key, value|
+        if value.kind_of?(Hash)
+          text = xml_for_hash_for_braintree(value)
+          "<#{key}>#{text}</#{key}>"
+        else
+          if [true, false, "true", "false"].include? value
+            "<#{key} type='boolean'>#{value}</#{key}>"
+          else
+            "<#{key}>#{value}</#{key}>"
+          end  
+        end
+      end.join
     end
 
     def xml_for_hash(hash)
